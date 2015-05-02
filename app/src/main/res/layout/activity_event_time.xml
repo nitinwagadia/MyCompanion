@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="10dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <include
+        layout="@layout/toolbar"
+        android:id="@+id/toolbar_event_time" />
+
+    <ScrollView
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:background="@drawable/background_text_view"
+                android:layout_height="wrap_content"
+                android:text="Please select time : " />
+
+            <TimePicker
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/timePicker" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/messageLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:background="@drawable/background_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Message: " />
+
+                <EditText
+                    android:id="@+id/message"
+                    android:hint="Please Enten Message"
+                    android:background="@drawable/message_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lines="3" />
+            </LinearLayout>
+
+            <TextView
+
+                android:background="@drawable/background_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Do you want to send SMS?" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+
+                <RadioGroup
+                    android:id="@+id/smschoice"
+                    android:weightSum="1.0"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <RadioButton
+                        android:layout_weight="0.5"
+                        android:layout_width="0dp"
+                        android:checked="true"
+                        android:id="@+id/yes_sms"
+                        android:layout_height="wrap_content"
+                        android:text="Yes" />
+
+                    <RadioButton
+                        android:layout_weight="0.5"
+                        android:id="@+id/no_sms"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="No" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/contactLayout"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:weightSum="1.0"
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_weight="0.7"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Please Select Contact" />
+
+                    <Button
+                        android:id="@+id/contactIntentButton"
+                        android:layout_weight="0.3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:src="@android:drawable/ic_menu_call" />
+                </LinearLayout>
+
+                <TextView
+
+                    android:background="@drawable/background_text_view"
+                    android:id="@+id/contacts_selected"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:weightSum="1.0"
+                android:layout_height="wrap_content">
+
+
+                <Button
+                    android:id="@+id/cancel"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:text="Cancel"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/confirm"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:text="ADD"
+                    android:layout_height="wrap_content" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
