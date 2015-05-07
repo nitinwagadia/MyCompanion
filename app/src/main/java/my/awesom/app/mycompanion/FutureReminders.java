@@ -36,6 +36,6 @@ public class FutureReminders extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         list.setAdapter(new FutureEventAdapter(getActivity()));
-        //list.setAdapter(new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, temp));
+
     }
 }

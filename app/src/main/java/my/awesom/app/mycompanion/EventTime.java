@@ -25,7 +25,7 @@ import java.util.Calendar;
 
 import my.awesom.app.mycompanion.Animation.AnimationsClass;
 import my.awesom.app.mycompanion.models.MyContacts;
-import my.awesom.app.mycompanion.models.MyTimeEventDetails;
+import my.awesom.app.mycompanion.models.MyEventDetails;
 import my.awesom.app.mycompanion.services.ServiceDialog;
 import my.awesom.app.mycompanion.services.ServiceForSMS;
 
@@ -53,8 +53,11 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
         setContentView(R.layout.activity_event_time);
         toolbar = (Toolbar) findViewById(R.id.toolbar_event_time);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setHomeButtonEnabled(true);
+
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         timePicker = (TimePicker) findViewById(R.id.timePicker);
         radioGroup = (RadioGroup) findViewById(R.id.smschoice);
@@ -174,8 +177,8 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
                     if (selectedContacts != null) {
                         int eventId = Constants.eventId++;
                         Log.i("MYLIST", "SMS eventId is" + eventId);
-                        MyTimeEventDetails details = new MyTimeEventDetails(message, selectedContacts, time, eventId, Constants.IS_NOT_PAST, type);
-                        new AddToDataBase().execute(details);
+                        MyEventDetails details = new MyEventDetails(message, selectedContacts, time, eventId, Constants.IS_NOT_PAST, type);
+                        new AddTimeToDataBase().execute(details);
 
                         Calendar calendar = Calendar.getInstance();
                         calendar.set(Calendar.HOUR_OF_DAY, timePicker.getCurrentHour());
@@ -198,8 +201,8 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
                     int eventId = Constants.eventId++;
                     Log.i("MYLIST", "NO SMS eventId is" + eventId);
 
-                    MyTimeEventDetails details = new MyTimeEventDetails(message, null, time, eventId, Constants.IS_NOT_PAST, type);
-                    new AddToDataBase().execute(details);
+                    MyEventDetails details = new MyEventDetails(message, null, time, eventId, Constants.IS_NOT_PAST, type);
+                    new AddTimeToDataBase().execute(details);
 
 
                     Calendar calendar = Calendar.getInstance();
@@ -224,14 +227,13 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
             finish();
         }
 
-
     }
 
-    class AddToDataBase extends AsyncTask<MyTimeEventDetails, Void, Void> {
+    class AddTimeToDataBase extends AsyncTask<MyEventDetails, Void, Void> {
         @Override
-        protected Void doInBackground(MyTimeEventDetails... params) {
+        protected Void doInBackground(MyEventDetails... params) {
             Log.i("MYLIST", "Adding to Database");
-            Database.addTimeEvent(params[0]);
+            Database.addEvent(params[0]);
             return null;
         }
     }

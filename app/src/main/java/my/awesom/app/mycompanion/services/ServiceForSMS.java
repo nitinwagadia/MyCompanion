@@ -25,6 +25,7 @@ public class ServiceForSMS extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
+
             if (!intent.getExtras().isEmpty()) {
 
                 Bundle b = intent.getExtras();
@@ -84,5 +85,7 @@ public class ServiceForSMS extends IntentService {
             Database.makeEventPast(eventId);
             return null;
         }
+
+
     }
 }

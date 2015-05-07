@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import my.awesom.app.mycompanion.models.MyContacts;
-import my.awesom.app.mycompanion.models.MyTimeEventDetails;
+import my.awesom.app.mycompanion.models.MyEventDetails;
 
 
 public class Database extends SQLiteOpenHelper {
@@ -19,18 +19,20 @@ public class Database extends SQLiteOpenHelper {
     private static final String PHONE_INFO_TABLE_NAME = "Phone_details";
     private static final String LOCATION_INFO_TABLE_NAME = "location_details";
     private static final String TIME_INFO_TABLE_NAME = "time_based_reminder_details";
+    private static final String TIME_OF_REMINDER = "time_reminder";
     private static final String EVENT_ID = "event_id";
+    private static final String TABLE_TIME_INFO = "create table if not exists " + TIME_INFO_TABLE_NAME + " (" + EVENT_ID + " integer," + TIME_OF_REMINDER + " varchar, foreign key(" + EVENT_ID + ") references " + GENERAL_TABLE_NAME + " (" + EVENT_ID + "));";
     private static final String EVENT_TYPE = "event_type";
     private static final String MESSAGE = "message";
     private static final String ISPAST = "isPast";
+    private static final String TRANSITION_TYPE = "transition_type";
     private static final String TABLE_GENERAL_INFO = "create table if not exists " + GENERAL_TABLE_NAME + "(" + EVENT_ID + " INTEGER Primary Key ," + EVENT_TYPE + " INTEGER, " + ISPAST + " integer, " + MESSAGE + " Text );";
     private static final String PHONE_NUMBER = "phone_number";
     private static final String TABLE_PHONE_NUMBER_INFO = "create table if not exists " + PHONE_INFO_TABLE_NAME + "(" + EVENT_ID + " integer," + PHONE_NUMBER + " integer(10), foreign key(" + EVENT_ID + ") references " + GENERAL_TABLE_NAME + "(" + EVENT_ID + "));";
     private static final String LATITUDE = "latitude";
     private static final String LONGITUDE = "longitude";
-    private static final String TABLE_LOCATION_INFO = "create table if not exists " + LOCATION_INFO_TABLE_NAME + " (" + EVENT_ID + " integer," + LATITUDE + " varchar(20) ," + LONGITUDE + " varchar(20), foreign key(" + EVENT_ID + ") references " + GENERAL_TABLE_NAME + " (" + EVENT_ID + "));";
-    private static final String TIME_OF_REMINDER = "time_reminder";
-    private static final String TABLE_TIME_INFO = "create table if not exists " + TIME_INFO_TABLE_NAME + " (" + EVENT_ID + " integer," + TIME_OF_REMINDER + " varchar, foreign key(" + EVENT_ID + ") references " + GENERAL_TABLE_NAME + " (" + EVENT_ID + "));";
+    private static final String TABLE_LOCATION_INFO = "create table if not exists " + LOCATION_INFO_TABLE_NAME + " (" + EVENT_ID + " integer," + LATITUDE + " varchar(20) ," + LONGITUDE + " varchar(20), " + TRANSITION_TYPE + " integer, foreign key(" + EVENT_ID + ") references " + GENERAL_TABLE_NAME + " (" + EVENT_ID + "));";
+
     private static Database database;
 
     private Database(Context context) {
@@ -44,11 +46,13 @@ public class Database extends SQLiteOpenHelper {
 
     }
 
-    public static void addTimeEvent(MyTimeEventDetails details) {
+    public static void addEvent(MyEventDetails details) {
 
-        if (details.getTypeOfEvent() == Constants.TYPE_TIME_SMS) {
 
-            AddEventData(details);
+        if (details.getTypeOfEvent() == Constants.TYPE_TIME_SMS || details.getTypeOfEvent() == Constants.TYPE_LOCATION_SMS) {
+
+            AddEventData(details, details.getTypeOfEvent());
+
             List<MyContacts> temp = details.getData();
             for (int i = 0; i < temp.size(); i++) {
                 ContentValues contentValues = new ContentValues();
@@ -59,25 +63,34 @@ public class Database extends SQLiteOpenHelper {
             }
 
         } else {
+            AddEventData(details, details.getTypeOfEvent());
 
-            AddEventData(details);
         }
 
     }
 
-    static void AddEventData(MyTimeEventDetails details) {
+
+    static void AddEventData(MyEventDetails details, int typeOfEvent) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(EVENT_ID, details.getEventId());
         contentValues.put(EVENT_TYPE, details.getTypeOfEvent());
         contentValues.put(ISPAST, details.getIsPast());
         contentValues.put(MESSAGE, details.getMessage());
-
         getDatabase().getWritableDatabase().insert(GENERAL_TABLE_NAME, null, contentValues);
         contentValues.clear();
-        contentValues.put(EVENT_ID, details.getEventId());
-        contentValues.put(TIME_OF_REMINDER, details.getTime());
-        getDatabase().getWritableDatabase().insert(TIME_INFO_TABLE_NAME, null, contentValues);
+        if (typeOfEvent == Constants.TYPE_TIME_SMS || typeOfEvent == Constants.TYPE_TIME_NO_SMS) {
 
+            contentValues.put(EVENT_ID, details.getEventId());
+            contentValues.put(TIME_OF_REMINDER, details.getTime());
+            getDatabase().getWritableDatabase().insert(TIME_INFO_TABLE_NAME, null, contentValues);
+        } else {
+            contentValues.put(EVENT_ID, details.getEventId());
+            contentValues.put(LATITUDE, details.getLatitude());
+            contentValues.put(LONGITUDE, details.getLongitude());
+            contentValues.put(TRANSITION_TYPE, details.getTransition_type());
+            getDatabase().getWritableDatabase().insert(LOCATION_INFO_TABLE_NAME, null, contentValues);
+
+        }
     }
 
     public static List getPhoneNumbers(String eventId) {
@@ -100,9 +113,26 @@ public class Database extends SQLiteOpenHelper {
         }
         cursor.moveToFirst();
         phoneNumbers.add(cursor.getString(cursor.getColumnIndex(MESSAGE)));
+        cursor.close();
 
 
         return phoneNumbers;
+    }
+
+    public static void makeEventPast(int eventId) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ISPAST, Constants.IS_PAST);
+        getDatabase().getWritableDatabase().update(GENERAL_TABLE_NAME, contentValues, EVENT_ID + "=" + eventId, null);
+    }
+
+    public static String getMessage(String eventId) {
+
+        Cursor cursor = getDatabase().getReadableDatabase().query(GENERAL_TABLE_NAME, null, EVENT_ID + "=" + eventId, null, null, null, null);
+        if (cursor.getCount() == 0) {
+            return null;
+        }
+        cursor.moveToFirst();
+        return cursor.getString(cursor.getColumnIndex(MESSAGE));
     }
 
     @Override
@@ -117,11 +147,5 @@ public class Database extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-    }
-
-    public static void makeEventPast(int eventId) {
-        ContentValues contentValues=new ContentValues();
-        contentValues.put(ISPAST,Constants.IS_PAST);
-        getDatabase().getWritableDatabase().update(GENERAL_TABLE_NAME,contentValues,EVENT_ID+"="+eventId,null);
     }
 }
