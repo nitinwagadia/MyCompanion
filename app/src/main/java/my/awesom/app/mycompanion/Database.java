@@ -32,7 +32,8 @@ public class Database extends SQLiteOpenHelper {
     private static final String LATITUDE = "latitude";
     private static final String LONGITUDE = "longitude";
     private static final String TABLE_LOCATION_INFO = "create table if not exists " + LOCATION_INFO_TABLE_NAME + " (" + EVENT_ID + " integer," + LATITUDE + " varchar(20) ," + LONGITUDE + " varchar(20), " + TRANSITION_TYPE + " integer, foreign key(" + EVENT_ID + ") references " + GENERAL_TABLE_NAME + " (" + EVENT_ID + "));";
-
+    private static final String GET_PAST_TIME_EVENT = "select * from " + GENERAL_TABLE_NAME + " g inner join " + TIME_INFO_TABLE_NAME + " t on  t." + EVENT_ID + " =g." + EVENT_ID;
+    private static final String GET_PAST_LOCATION_EVENT = "select * from " + GENERAL_TABLE_NAME + " g inner join " + LOCATION_INFO_TABLE_NAME + " t on  t." + EVENT_ID + " =g." + EVENT_ID;
     private static Database database;
 
     private Database(Context context) {
@@ -135,6 +136,48 @@ public class Database extends SQLiteOpenHelper {
         return cursor.getString(cursor.getColumnIndex(MESSAGE));
     }
 
+    public static void getAllTimeEvents() {
+
+        Cursor cursor = getDatabase().getReadableDatabase().rawQuery(GET_PAST_TIME_EVENT, null);
+
+        while (cursor.moveToNext()) {
+            int event_id = cursor.getInt(cursor.getColumnIndex(EVENT_ID));
+            int event_type = cursor.getInt(cursor.getColumnIndex(EVENT_TYPE));
+            int isPast = cursor.getInt(cursor.getColumnIndex(ISPAST));
+            String message = cursor.getString(cursor.getColumnIndex(MESSAGE));
+            String time = cursor.getString(cursor.getColumnIndex(TIME_OF_REMINDER));
+            if (isPast == Constants.IS_PAST) {
+                Constants.pastEvents.add(new MyEventDetails(message, null, time, event_id, isPast, event_type));
+            } else {
+                Constants.scheduledEvents.add(new MyEventDetails(message, null, time, event_id, isPast, event_type));
+            }
+        }
+
+    }
+
+
+    public static void getAllLocationEvents() {
+
+        Cursor cursor = getDatabase().getReadableDatabase().rawQuery(GET_PAST_LOCATION_EVENT, null);
+
+        while (cursor.moveToNext()) {
+            int event_id = cursor.getInt(cursor.getColumnIndex(EVENT_ID));
+            int event_type = cursor.getInt(cursor.getColumnIndex(EVENT_TYPE));
+            int isPast = cursor.getInt(cursor.getColumnIndex(ISPAST));
+            String message = cursor.getString(cursor.getColumnIndex(MESSAGE));
+            String longitude = cursor.getString(cursor.getColumnIndex(LONGITUDE));
+            String latitude = cursor.getString(cursor.getColumnIndex(LATITUDE));
+            int transition_type = cursor.getInt(cursor.getColumnIndex(TRANSITION_TYPE));
+
+            if (isPast == Constants.IS_PAST) {
+                Constants.pastEvents.add(new MyEventDetails(message, null, latitude, longitude, event_id, isPast, event_type, transition_type));
+            } else {
+                Constants.scheduledEvents.add(new MyEventDetails(message, null, latitude, longitude, event_id, isPast, event_type, transition_type));
+            }
+        }
+
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(TABLE_GENERAL_INFO);
@@ -148,4 +191,5 @@ public class Database extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
     }
+
 }

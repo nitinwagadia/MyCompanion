@@ -289,6 +289,7 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
         }
     }
 
+
     class AddLocationToDataBase extends AsyncTask<MyEventDetails, Void, Void> {
 
         @Override
@@ -297,4 +298,6 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
             return null;
         }
     }
+
+
 }

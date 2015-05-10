@@ -15,15 +15,13 @@ import my.awesom.app.mycompanion.MyScheduledRemindersAdapter.MyViewHolder;
  * Created by nitin on 5/9/15.
  */
 public class MyScheduledRemindersAdapter extends RecyclerView.Adapter<MyViewHolder> {
-    String temp[];
     Context context;
     LayoutInflater inflater;
     int type[] = {0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0};
 
 
-    public MyScheduledRemindersAdapter(Context context, String[] temp) {
+    public MyScheduledRemindersAdapter(Context context) {
         this.context = context;
-        this.temp = temp;
         this.inflater = LayoutInflater.from(context);
     }
 
@@ -49,12 +47,12 @@ public class MyScheduledRemindersAdapter extends RecyclerView.Adapter<MyViewHold
             holder.dateTime.setVisibility(View.GONE);
         }
 
-        holder.message.setText(temp[position]);
+        holder.message.setText(Constants.scheduledEvents.get(position).getMessage());
     }
 
     @Override
     public int getItemCount() {
-        return temp.length;
+        return Constants.scheduledEvents.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

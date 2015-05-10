@@ -34,7 +34,7 @@ public class ScheduledReminders extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        recyclerview.setAdapter(new MyScheduledRemindersAdapter(getActivity(), temp));
+        recyclerview.setAdapter(new MyScheduledRemindersAdapter(getActivity()));
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerview.setLayoutManager(layoutManager);
         //list.setAdapter(new FutureEventAdapter(getActivity(), temp));
