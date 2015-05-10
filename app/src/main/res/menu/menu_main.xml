@@ -4,22 +4,9 @@
     tools:context=".MainActivity">
     <item
         android:id="@+id/action_settings"
-        android:title="@string/action_settings"
         android:orderInCategory="100"
+        android:title="@string/action_settings"
         app:showAsAction="never" />
-   <item
-       android:id="@+id/add_time"
-       android:title="Add new Time based reminder"
-       android:icon="@android:drawable/ic_menu_add"
-       android:orderInCategory="200"
-       app:showAsAction="always"
 
-       />
-    <item android:id="@+id/add_location"
-        android:title="Add new time based location Reminder"
-        android:icon="@android:drawable/ic_dialog_map"
-        android:orderInCategory="300"
-        app:showAsAction="always"
-        />
 
 </menu>

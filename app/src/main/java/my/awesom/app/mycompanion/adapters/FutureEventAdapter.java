@@ -1,4 +1,4 @@
-package my.awesom.app.mycompanion;
+package my.awesom.app.mycompanion.adapters;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import my.awesom.app.mycompanion.R;
+
 /**
  * Created by nitin on 5/1/15.
  */
@@ -20,18 +22,19 @@ public class FutureEventAdapter extends BaseAdapter {
     Context context;
     ArrayList data;
     LayoutInflater inflater;
+    String temp[];
 
-    public FutureEventAdapter(Context context) {
+    public FutureEventAdapter(Context context, String[] temp) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         data = new ArrayList();
-
+        this.temp = temp;
     }
 
     @Override
     public int getCount() {
 
-        return type.length;
+        return temp.length;
     }
 
     @Override
@@ -69,6 +72,7 @@ public class FutureEventAdapter extends BaseAdapter {
             holder.date.setVisibility(View.GONE);
         }
 
+        holder.message.setText(temp[position]);
         return convertView;
     }
 

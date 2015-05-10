@@ -145,6 +145,8 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
         if (id == android.R.id.home)
             NavUtils.navigateUpFromSameTask(this);
 
+        if (id == R.id.accept)
+            finish();
 
         return super.onOptionsItemSelected(item);
     }
@@ -180,12 +182,7 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
                         MyEventDetails details = new MyEventDetails(message, selectedContacts, time, eventId, Constants.IS_NOT_PAST, type);
                         new AddTimeToDataBase().execute(details);
 
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.set(Calendar.HOUR_OF_DAY, timePicker.getCurrentHour());
-                        calendar.set(Calendar.MINUTE, timePicker.getCurrentMinute());
-                        calendar.set(Calendar.SECOND, 0);
-
-                        //call SMS service Here
+                        Calendar calendar = setUpCalender();
 
                         Intent i = new Intent(EventTime.this, ServiceForSMS.class);
                         i.putExtra("1", "hello i am SMS TYPE EVENT");
@@ -205,10 +202,7 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
                     new AddTimeToDataBase().execute(details);
 
 
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(Calendar.HOUR_OF_DAY, timePicker.getCurrentHour());
-                    calendar.set(Calendar.MINUTE, timePicker.getCurrentMinute());
-                    calendar.set(Calendar.SECOND, 0);
+                    Calendar calendar = setUpCalender();
 
                     Intent i = new Intent(EventTime.this, ServiceDialog.class);
                     i.putExtra("1", "hello i am No SMS TYPE EVENT");
@@ -219,13 +213,28 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
 
                 }
 
-
             }
 
 
         } else {
             finish();
         }
+
+    }
+
+    private Calendar setUpCalender() {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, timePicker.getCurrentHour());
+        calendar.set(Calendar.MINUTE, timePicker.getCurrentMinute());
+        calendar.set(Calendar.SECOND, 0);
+        if (System.currentTimeMillis() >= calendar.getTimeInMillis()) {
+
+            calendar.add(Calendar.DATE, 1);
+
+        }
+
+        return calendar;
 
     }
 

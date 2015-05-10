@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import my.awesom.app.mycompanion.customviews.SlidingTabLayout;
 
@@ -30,6 +31,21 @@ public class MainActivity extends ActionBarActivity {
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         viewPager.setAdapter(new MyViewPagerAdapter(getSupportFragmentManager()));
         slidingTabLayout.setViewPager(viewPager);
+        (findViewById(R.id.add_time)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, EventTime.class));
+
+            }
+        });
+
+        (findViewById(R.id.add_location)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, EventLocation.class));
+
+            }
+        });
         //AnimationsClass.animateToolbar(toolbar);
 
     }
@@ -50,16 +66,6 @@ public class MainActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-        if (id == R.id.add_time) {
-            startActivity(new Intent(MainActivity.this, EventTime.class));
-            return true;
-
-        }
-
-        if (id == R.id.add_location) {
-            startActivity(new Intent(MainActivity.this, EventLocation.class));
-            return true;
-        }
 
 
         return super.onOptionsItemSelected(item);
@@ -68,7 +74,7 @@ public class MainActivity extends ActionBarActivity {
 
     private class MyViewPagerAdapter extends FragmentPagerAdapter {
 
-        String items[] = {"Future Reminders", "Past Reminders"};
+        String items[] = {"Scheduled Reminders", "Past Reminders"};
 
         public MyViewPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -77,8 +83,10 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public Fragment getItem(int position) {
             Fragment fragment;
-            fragment = FutureReminders.getInstance();
-
+            //if (position == 0)
+            fragment = ScheduledReminders.getInstance();
+            //else
+            //   fragment = PastReminders.getInstance();
             return fragment;
         }
 
