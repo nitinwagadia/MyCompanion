@@ -185,7 +185,6 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
                         Calendar calendar = setUpCalender();
 
                         Intent i = new Intent(EventTime.this, ServiceForSMS.class);
-                        i.putExtra("1", "hello i am SMS TYPE EVENT");
                         i.putExtra("requestcode", eventId);
                         PendingIntent pendingIntent = PendingIntent.getService(EventTime.this, eventId, i, PendingIntent.FLAG_UPDATE_CURRENT);
                         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);

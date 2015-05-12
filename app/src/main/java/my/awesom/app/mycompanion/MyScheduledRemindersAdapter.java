@@ -17,7 +17,7 @@ import my.awesom.app.mycompanion.MyScheduledRemindersAdapter.MyViewHolder;
 public class MyScheduledRemindersAdapter extends RecyclerView.Adapter<MyViewHolder> {
     Context context;
     LayoutInflater inflater;
-    int type[] = {0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0};
+    //int type[] = {0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0};
 
 
     public MyScheduledRemindersAdapter(Context context) {
@@ -37,12 +37,12 @@ public class MyScheduledRemindersAdapter extends RecyclerView.Adapter<MyViewHold
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
 
-        if (type[position] == 0) {
-            holder.imageView.setImageDrawable(context.getResources().getDrawable(R.mipmap.ic_clock));
+        if (Constants.scheduledEvents.get(position).getTypeOfEvent() == Constants.TYPE_LOCATION_NO_SMS || Constants.scheduledEvents.get(position).getTypeOfEvent() == Constants.TYPE_LOCATION_SMS) {
+            holder.imageView.setImageDrawable(context.getResources().getDrawable(R.mipmap.ic_compass));
             holder.location.setVisibility(View.GONE);
             holder.dateTime.setVisibility(View.VISIBLE);
         } else {
-            holder.imageView.setImageDrawable(context.getResources().getDrawable(R.mipmap.ic_compass));
+            holder.imageView.setImageDrawable(context.getResources().getDrawable(R.mipmap.ic_clock));
             holder.location.setVisibility(View.VISIBLE);
             holder.dateTime.setVisibility(View.GONE);
         }

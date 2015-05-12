@@ -29,7 +29,9 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
+        //if (Constants.scheduledEvents.isEmpty() && Constants.pastEvents.isEmpty()) {
         new GetAllEvents().execute();
+        //}
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

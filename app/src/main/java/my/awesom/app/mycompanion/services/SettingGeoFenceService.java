@@ -27,6 +27,7 @@ public class SettingGeoFenceService extends IntentService implements GoogleApiCl
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
     private GeofencingRequest geofencingRequest;
+    private PendingIntent pendingIntent;
 
     public SettingGeoFenceService() {
         super("SettingGeoFenceService");
@@ -63,7 +64,6 @@ public class SettingGeoFenceService extends IntentService implements GoogleApiCl
     @Override
     public void onConnected(Bundle bundle) {
         Intent intent;
-        Log.i("MYLIST", "I am Connected ");
 
         geofencingRequest = new GeofencingRequest.Builder().addGeofence(geofence)
                 .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER).build();
@@ -75,9 +75,10 @@ public class SettingGeoFenceService extends IntentService implements GoogleApiCl
             intent = new Intent(this, ServiceDialog.class);
             intent.putExtra("1", "I am Location service");
             intent.putExtra("requestcode", requestNumber + "");
+
         }
 
-        PendingIntent pendingIntent = PendingIntent.getService(this, requestNumber, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        pendingIntent = PendingIntent.getService(this, requestNumber, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         PendingResult<Status> pendingResult = LocationServices.GeofencingApi
                 .addGeofences(googleApiClient, geofencingRequest,
@@ -100,9 +101,13 @@ public class SettingGeoFenceService extends IntentService implements GoogleApiCl
 
     @Override
     public void onResult(Status status) {
+
         Log.i("MYLIST", "I am in Result");
         if (status.isSuccess()) {
+            //LocationServices.GeofencingApi.removeGeofences(this.googleApiClient, this.pendingIntent);
             Log.i("MYLIST", "Success");
+            Log.i("MYLIST", requestNumber + "");
+
 
         } else if (status.isCanceled()) {
             Log.i("MYLIST", "Cancelled");
