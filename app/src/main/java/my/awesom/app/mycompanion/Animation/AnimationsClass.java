@@ -6,9 +6,11 @@ package my.awesom.app.mycompanion.Animation;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+
+import my.awesom.app.mycompanion.adapters.MyPastRemindersAdapter;
+import my.awesom.app.mycompanion.adapters.MyScheduledRemindersAdapter;
 
 public class AnimationsClass {
     static void animate(View v) {
@@ -58,17 +60,17 @@ public class AnimationsClass {
 
     }
 
-    public static void animateToolbar(View  v) {
+    public static void animateToolbar(View v) {
 
 
         //AnimatorSet animatorSet = new AnimatorSet();
         //ObjectAnimator animatorX=ObjectAnimator.ofFloat(v,"translationX",-100,100,-50,50,0,0);
         //ObjectAnimator animatorY=ObjectAnimator.ofFloat(v,"translationY",-100,200,0,150,0,100,0,50,0,40,0,30,0,20,0,10,0).setDuration(2000).start();
         ObjectAnimator.ofFloat(v, "translationY", 800, 600, 400, 200, 100, 50, 0, 40, 0, 30, 0, 20, 0, 10, 0).setDuration(2000).start();
-      //  ObjectAnimator.ofFloat(v, "translationX", -100, 200, 0, 150, 0, 100, 0, 50, 0, 40, 0, 30, 0, 20, 0, 10, 0).setDuration(2000).start();
+        //  ObjectAnimator.ofFloat(v, "translationX", -100, 200, 0, 150, 0, 100, 0, 50, 0, 40, 0, 30, 0, 20, 0, 10, 0).setDuration(2000).start();
 
-        ObjectAnimator.ofFloat(v,"rotationX",0,90,180,270,360).setDuration(2000).start();
-        ObjectAnimator.ofFloat(v,"rotationY",0,90,180,270,360).setDuration(2000).start();
+        ObjectAnimator.ofFloat(v, "rotationX", 0, 90, 180, 270, 360).setDuration(2000).start();
+        ObjectAnimator.ofFloat(v, "rotationY", 0, 90, 180, 270, 360).setDuration(2000).start();
 
         //ObjectAnimator.ofFloat(v,"translationY",-100,200,0,150,0,100,0,50,0,40,0,30,0,20,0,10,0).setDuration(2000).start();
 
@@ -86,5 +88,29 @@ public class AnimationsClass {
         //      animatorY.start();
 
     }
+
+    public static void animateList(MyScheduledRemindersAdapter.MyViewHolder v) {
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        ObjectAnimator animatorY = ObjectAnimator.ofFloat(v.itemView, "translationY", -100, 100, -50, 50, 0, 0);
+        ObjectAnimator animatorX = ObjectAnimator.ofFloat(v.itemView, "translationX", -100, 100, -50, 50, 0, 0);
+        //animatorX.setDuration(1000);
+        animatorSet.setDuration(1500);
+        animatorSet.playTogether(animatorX, animatorY);
+        animatorX.start();
+    }
+
+    public static void animateList(MyPastRemindersAdapter.ViewHolderPastEvents v) {
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        ObjectAnimator animatorY = ObjectAnimator.ofFloat(v.itemView, "translationY", -100, 100, -50, 50, 0, 0);
+        ObjectAnimator animatorX = ObjectAnimator.ofFloat(v.itemView, "translationX", -100, 100, -50, 50, 0, 0);
+        //animatorX.setDuration(1000);
+        animatorSet.setDuration(1500);
+        animatorSet.playTogether(animatorX, animatorY);
+        animatorX.start();
+    }
+
+
 }
 

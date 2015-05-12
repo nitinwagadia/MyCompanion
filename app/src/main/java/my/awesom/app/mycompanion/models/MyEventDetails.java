@@ -1,18 +1,19 @@
 package my.awesom.app.mycompanion.models;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class MyEventDetails {
+    private String address;
     private String message;
     private ArrayList<MyContacts> data;
     private String time;
     private int eventId;
     private int isPast;
     private int typeOfEvent;
-    private String latitude;
-    private String longitude;
     private int transition_type;
 
     public MyEventDetails(String message, ArrayList<MyContacts> data, String time, int eventId, int isPast, int typeOfEvent) {
@@ -24,25 +25,21 @@ public class MyEventDetails {
         this.typeOfEvent = typeOfEvent;
     }
 
-    public MyEventDetails(String message, ArrayList<MyContacts> data, String latitude, String longitude, int eventId, int isPast, int typeOfEvent, int transition_type) {
+    public MyEventDetails(String message, ArrayList<MyContacts> data, String address, int eventId, int isPast, int typeOfEvent, int transition_type) {
         this.message = message;
         this.data = data;
         this.eventId = eventId;
         this.isPast = isPast;
         this.typeOfEvent = typeOfEvent;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.address = address;
         this.transition_type = transition_type;
+        Log.i("MYLIST", "Address is : " + address);
 
     }
 
 
-    public String getLatitude() {
-        return latitude;
-    }
-
-    public String getLongitude() {
-        return longitude;
+    public String getAddress() {
+        return address;
     }
 
     public int getEventId() {

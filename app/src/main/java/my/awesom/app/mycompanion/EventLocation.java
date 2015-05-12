@@ -1,11 +1,12 @@
 package my.awesom.app.mycompanion;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.Location;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -29,8 +30,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
+import de.greenrobot.event.EventBus;
 import my.awesom.app.mycompanion.Animation.AnimationsClass;
 import my.awesom.app.mycompanion.models.MyContacts;
 import my.awesom.app.mycompanion.models.MyEventDetails;
@@ -44,6 +49,7 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
     MapFragment mapFragment;
     Toolbar toolbar;
     boolean doesMarkerExist = false;
+    private GoogleMap googleMap;
     private RadioGroup radioGroupSMS, radioGroupTransition;
     private LinearLayout contactLayout;
     private Button contactIntentButton;
@@ -52,11 +58,13 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
     private String names_list;
     private Circle myCircle;
     private ArrayList<MyContacts> selectedContacts;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_location);
+        EventBus.getDefault().register(this);
         toolbar = (Toolbar) findViewById(R.id.toolbar_event_location);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -83,18 +91,37 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
         });
 
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapfragment);
-
+        mapFragment.getMapAsync(this);
         if (savedInstanceState == null) {
             mapFragment.getMapAsync(this);
+        } else {
+            Bundle b = savedInstanceState;
+            messageBox.setText(b.getString("messageBox"));
+            mapFragment.getMapAsync(this);
+            EventLocation.marker[0].setPosition(new LatLng(b.getDouble("latitude"), b.getDouble("longitude")));
+            //setCircle(EventLocation.marker[0].getPosition(), googleMap);
+            doesMarkerExist = true;
+            Log.i("MYLIST", "Lat : " + b.getDouble("latitude") + "");
+            Log.i("MYLIST", "Lon : " + b.getDouble("longitude"));
+
+
         }
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
 
     @Override
-    public void onMapReady(final GoogleMap googleMap) {
+    public void onMapReady(GoogleMap gMap) {
+        Log.i("MYLIST", "MAP READY");
+        googleMap = gMap;
         googleMap.setMyLocationEnabled(true);
-        Location location = googleMap.getMyLocation();
+        // Location location = googleMap.getMyLocation();
+
         final Marker[] marker = new Marker[1];
 
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -184,12 +211,15 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+        boolean flag = false;
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
             return true;
         } else if (id == android.R.id.home) {
-            NavUtils.navigateUpFromSameTask(this);
+            startActivity(new Intent(EventLocation.this, MainActivity.class));
+            finish();
+
         } else if (id == R.id.accept) {
 
             int type, transition_type;
@@ -219,49 +249,114 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
                     if (selectedContacts != null) {
                         if (EventLocation.marker[0] != null) {
                             int eventId = Constants.eventId++;
-                            Log.i("MYLIST", "SMS eventId is" + eventId);
-                            MyEventDetails details = new MyEventDetails(message, selectedContacts, EventLocation.marker[0].getPosition().latitude + "", EventLocation.marker[0].getPosition().longitude + "", eventId, Constants.IS_NOT_PAST, type, transition_type);
                             Geofence geofence = setUpGeoFenceBuilder(eventId, transition_type);
+
+                            Log.i("MYLIST", "I am going to find  geocode");
+                            String geoCode = getAddress(EventLocation.marker[0].getPosition().latitude, EventLocation.marker[0].getPosition().longitude);
+                            Log.i("MYLIST", "Yippeeee geocode " + geoCode);
+
+                            MyEventDetails details = null;
+                            details = new MyEventDetails(message, selectedContacts, geoCode, eventId, Constants.IS_NOT_PAST, type, transition_type);
+                            Log.i("MYLIST", "I found  geocode " + geoCode);
+
+
                             new AddLocationToDataBase().execute(details);
                             SettingGeoFenceService.setUp(geofence, eventId, type);
                             startService(new Intent(EventLocation.this, SettingGeoFenceService.class));
+                            flag = true;
 
                         } else {
 
                             Toast.makeText(EventLocation.this, "Please select a location", Toast.LENGTH_LONG).show();
-
+                            flag = false;
                         }
 
 
                     } else {
                         AnimationsClass.animateContactBox(contactIntentButton);
+                        flag = false;
                     }
 
-                } else {
+                } else if (type == Constants.TYPE_LOCATION_NO_SMS) {
                     if (EventLocation.marker[0] != null) {
                         int eventId = Constants.eventId++;
-                        MyEventDetails details = new MyEventDetails(message, null, EventLocation.marker[0].getPosition().latitude + "", EventLocation.marker[0].getPosition().longitude + "", eventId, Constants.IS_NOT_PAST, type, transition_type);
-                        new AddLocationToDataBase().execute(details);
                         Geofence geofence = setUpGeoFenceBuilder(eventId, transition_type);
-                        new AddLocationToDataBase().execute(details);
                         SettingGeoFenceService.setUp(geofence, eventId, type);
-                        startService(new Intent(EventLocation.this, SettingGeoFenceService.class));
 
+                        Log.i("MYLIST", "I am going to find  geocode");
+                        String geoCode = getAddress(EventLocation.marker[0].getPosition().latitude, EventLocation.marker[0].getPosition().longitude);
+
+                        Toast.makeText(EventLocation.this, geoCode, Toast.LENGTH_LONG).show();
+                        Log.i("MYLIST", "geocode is : " + geoCode);
+
+                        MyEventDetails details = null;
+                        Log.i("MYLIST", "creating detail object");
+                        Log.i("MYLIST", "geocode is : " + geoCode);
+                        details = new MyEventDetails(message, null, geoCode, eventId, Constants.IS_NOT_PAST, type, transition_type);
+                        Log.i("MYLIST", "Done creating detail object");
+                        Log.i("MYLIST", "geocode is : " + geoCode);
+                        new AddLocationToDataBase().execute(details);
+                        Log.i("MYLIST", "Adding to Database");
+                        startService(new Intent(EventLocation.this, SettingGeoFenceService.class));
+                        Log.i("MYLIST", "Starting service");
+
+                        flag = true;
 
                     } else {
                         Toast.makeText(EventLocation.this, "Please select a location", Toast.LENGTH_LONG).show();
+                        flag = false;
                     }
                 }
 
 
             }
-
-
+            if (flag) {
+               /* startActivity(new Intent(EventLocation.this, MainActivity.class));
+                finish();*/
+            }
         } else if (id == R.id.cancel) {
-            NavUtils.navigateUpFromSameTask(this);
+            startActivity(new Intent(EventLocation.this, MainActivity.class));
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("contacts", selectedContacts);
+        outState.putInt("radiosms", radioGroupSMS.getCheckedRadioButtonId());
+        outState.putInt("radiotransition", radioGroupTransition.getCheckedRadioButtonId());
+        outState.putString("message", messageBox.getText().toString());
+        outState.putDouble("latitude", EventLocation.marker[0].getPosition().latitude);
+        outState.putDouble("latitude", EventLocation.marker[0].getPosition().longitude);
+
+    }
+
+    public void onEventMainThread(ShowDialogForGeoCode s) {
+        progressDialog = null;
+        progressDialog = ProgressDialog.show(EventLocation.this, "Please Wait ...", "Setting Reminders!");
+    }
+
+    public void onEventMainThread(CloseDialogForGeoCode c) {
+        if (progressDialog != null)
+            progressDialog.dismiss();
+        progressDialog = null;
+    }
+
+    private String getAddress(double latitude, double longitude) {
+        String address = "";
+        try {
+            address = new GetGeoCode().execute(latitude, longitude).get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        Log.i("MYLIST", "address is : " + address);
+        //return geoCode;
+        return address;
     }
 
     private Geofence setUpGeoFenceBuilder(int eventId, int transition_type) {
@@ -269,7 +364,7 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
         Geofence.Builder geoFenceBuilder = new Geofence.Builder();
         geoFenceBuilder.setRequestId(eventId + "");
         geoFenceBuilder.setCircularRegion(marker[0].getPosition().latitude, marker[0].getPosition().longitude, 100);
-        geoFenceBuilder.setExpirationDuration(Geofence.NEVER_EXPIRE);
+        geoFenceBuilder.setExpirationDuration(Constants.time);
         if (transition_type == Constants.TRANSITION_ENTER) {
             geoFenceBuilder.setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER);
         } else {
@@ -297,6 +392,51 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
             Database.addEvent(params[0]);
             return null;
         }
+    }
+
+
+    private class GetGeoCode extends AsyncTask<Double, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            EventBus.getDefault().post(new ShowDialogForGeoCode());
+        }
+
+        @Override
+        protected String doInBackground(Double... params) {
+
+            String geoCode = "";
+
+            Geocoder geocoder = new Geocoder(EventLocation.this, Locale.getDefault());
+            List<Address> address = null;
+            try {
+                address = geocoder.getFromLocation(params[0], params[1], 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (address.size() > 0) {
+                for (int i = 0; i < address.get(0).getMaxAddressLineIndex(); i++)
+                    geoCode += address.get(0).getAddressLine(i) + "\n";
+
+            }
+            return geoCode;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            EventBus.getDefault().post(new CloseDialogForGeoCode());
+            startActivity(new Intent(EventLocation.this, MainActivity.class));
+            finish();
+        }
+    }
+
+    class ShowDialogForGeoCode {
+    }
+
+
+    class CloseDialogForGeoCode {
     }
 
 

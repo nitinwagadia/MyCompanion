@@ -40,7 +40,8 @@
         <activity
             android:name=".EventTime"
             android:configChanges="orientation"
-            android:label="@string/title_activity_event_time">
+            android:label="@string/title_activity_event_time"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="my.awesom.app.mycompanion.MainActivity" />
@@ -48,7 +49,8 @@
         <activity
             android:name=".EventLocation"
             android:configChanges="orientation"
-            android:label="@string/title_activity_event_location">
+            android:label="@string/title_activity_event_location"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="my.awesom.app.mycompanion.MainActivity" />

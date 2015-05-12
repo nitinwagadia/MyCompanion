@@ -7,11 +7,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -40,6 +43,7 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
     private LinearLayout contactLayout;
     private AlarmManager alarmManager;
     private Toolbar toolbar;
+    private CardView cardContactLayout;
     private Button contactIntentButton, confirmButton;
     private EditText messageBox;
     private String names_list = "";
@@ -63,20 +67,26 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
         radioGroup = (RadioGroup) findViewById(R.id.smschoice);
         contactLayout = (LinearLayout) findViewById(R.id.contactLayout);
         contactIntentButton = (Button) findViewById(R.id.contactIntentButton);
-        confirmButton = (Button) findViewById(R.id.confirm);
         messageBox = (EditText) findViewById(R.id.message);
-        confirmButton.setOnClickListener(this);
+        cardContactLayout = (CardView) findViewById(R.id.cardContactLayout);
         contactIntentButton.setOnClickListener(this);
-        findViewById(R.id.cancel).setOnClickListener(this);
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.yes_sms)
+                if (checkedId == R.id.yes_sms) {
+                    Animation fade = AnimationUtils.loadAnimation(EventTime.this, android.R.anim.fade_in);
+                    fade.setDuration(1000);
+                    cardContactLayout.startAnimation(fade);
                     contactLayout.setVisibility(View.VISIBLE);
+                }
+                if (checkedId == R.id.no_sms) {
 
-                if (checkedId == R.id.no_sms)
+                    Animation fade = AnimationUtils.loadAnimation(EventTime.this, android.R.anim.fade_out);
+                    fade.setDuration(1000);
+                    cardContactLayout.startAnimation(fade);
                     contactLayout.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -136,6 +146,8 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+
+        boolean flag = false;
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -145,20 +157,8 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
         if (id == android.R.id.home)
             NavUtils.navigateUpFromSameTask(this);
 
-        if (id == R.id.accept)
-            finish();
+        if (id == R.id.accept) {
 
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onClick(View v) {
-        int id = v.getId();
-        AnimationsClass.animateButtonClick(v);
-        if (id == R.id.contactIntentButton) {
-            Intent contactPick = new Intent(EventTime.this, Contacts.class);
-            startActivityForResult(contactPick, Constants.PICKED_CONTACTS);
-        } else if (id == R.id.confirm) {
             int type;
             String message, time;
 
@@ -173,12 +173,12 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
             if (message.isEmpty()) {
                 AnimationsClass.animateInvalidInput(findViewById(R.id.messageLayout));
                 messageBox.setError("Cannot be Empty");
+                flag = false;
             } else {
                 time = timePicker.getCurrentHour().toString() + ":" + timePicker.getCurrentMinute().toString();
                 if (type == Constants.TYPE_TIME_SMS) {
                     if (selectedContacts != null) {
                         int eventId = Constants.eventId++;
-                        Log.i("MYLIST", "SMS eventId is" + eventId);
                         MyEventDetails details = new MyEventDetails(message, selectedContacts, time, eventId, Constants.IS_NOT_PAST, type);
                         new AddTimeToDataBase().execute(details);
 
@@ -189,13 +189,14 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
                         PendingIntent pendingIntent = PendingIntent.getService(EventTime.this, eventId, i, PendingIntent.FLAG_UPDATE_CURRENT);
                         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
                         Toast.makeText(EventTime.this, "Alarm set", Toast.LENGTH_SHORT).show();
+                        flag = true;
                     } else {
                         AnimationsClass.animateContactBox(contactIntentButton);
+                        flag = false;
                     }
 
                 } else {
                     int eventId = Constants.eventId++;
-                    Log.i("MYLIST", "NO SMS eventId is" + eventId);
 
                     MyEventDetails details = new MyEventDetails(message, null, time, eventId, Constants.IS_NOT_PAST, type);
                     new AddTimeToDataBase().execute(details);
@@ -209,14 +210,30 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
 
                     PendingIntent pendingIntent = PendingIntent.getService(EventTime.this, eventId, i, PendingIntent.FLAG_UPDATE_CURRENT);
                     alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-
+                    flag = true;
                 }
 
             }
-
-
-        } else {
+            if (flag) {
+                startActivity(new Intent(EventTime.this, MainActivity.class));
+                finish();
+            }
+        } else if (id == R.id.cancel) {
+            startActivity(new Intent(EventTime.this, MainActivity.class));
             finish();
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        AnimationsClass.animateButtonClick(v);
+        if (id == R.id.contactIntentButton) {
+            Intent contactPick = new Intent(EventTime.this, Contacts.class);
+            startActivityForResult(contactPick, Constants.PICKED_CONTACTS);
         }
 
     }

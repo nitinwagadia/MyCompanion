@@ -1,7 +1,6 @@
 package my.awesom.app.mycompanion;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 import my.awesom.app.mycompanion.models.MyEventDetails;
@@ -22,9 +21,10 @@ public class Constants {
     public static final int IS_PAST = 1;
     public static final int TRANSITION_ENTER = 0;
     public static final int TRANSITION_LEAVE = 1;
+    public static final int time = 24 * 60 * 60 * 1000;
     public static int eventId = 0;
-    public static List<MyEventDetails> pastEvents = new ArrayList<MyEventDetails>();
-    public static List<MyEventDetails> scheduledEvents = new ArrayList<MyEventDetails>();
+    public static List<MyEventDetails> pastEvents;
+    public static List<MyEventDetails> scheduledEvents;
 
 
 }

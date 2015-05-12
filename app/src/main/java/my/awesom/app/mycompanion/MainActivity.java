@@ -15,8 +15,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.util.ArrayList;
+
 import de.greenrobot.event.EventBus;
 import my.awesom.app.mycompanion.customviews.SlidingTabLayout;
+import my.awesom.app.mycompanion.models.MyEventDetails;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -44,7 +47,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, EventTime.class));
-
+                finish();
             }
         });
 
@@ -52,7 +55,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, EventLocation.class));
-
+                finish();
             }
         });
         //AnimationsClass.animateToolbar(toolbar);
@@ -102,10 +105,11 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public Fragment getItem(int position) {
             Fragment fragment;
-            //if (position == 0)
-            fragment = ScheduledReminders.getInstance();
-            //else
-            //   fragment = PastReminders.getInstance();
+            if (position == 0) {
+                fragment = ScheduledReminders.getInstance();
+            } else {
+                fragment = PastReminders.getInstance();
+            }
             return fragment;
         }
 
@@ -138,12 +142,14 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
+            Constants.scheduledEvents = new ArrayList<MyEventDetails>();
+            Constants.pastEvents = new ArrayList<MyEventDetails>();
 
             Database.getAllTimeEvents();
             setProgress(20);
             Database.getAllLocationEvents();
             setProgress(50);
-            Log.i("MYLIST", "I am done");
+            // Log.i("MYLIST", "I am done");
             return null;
         }
 
@@ -151,6 +157,11 @@ public class MainActivity extends ActionBarActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             EventBus.getDefault().post(new CloseDialogForEvents());
+            for (int i = 0; i < Constants.pastEvents.size(); i++)
+                Log.i("MYLIST", Constants.pastEvents.get(i).getEventId() + " is stored");
+
+            for (int i = 0; i < Constants.scheduledEvents.size(); i++)
+                Log.i("MYLIST", Constants.scheduledEvents.get(i).getEventId() + " is stored");
 
         }
 
