@@ -26,9 +26,14 @@ public class ScheduledReminders extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View layout = inflater.inflate(R.layout.fragment_reminders_list, container, false);
-        recyclerview = (RecyclerView) layout.findViewById(R.id.recyclerview);
+        View layout;
+        if (Constants.scheduledEvents.isEmpty()) {
+            layout = inflater.inflate(R.layout.remider_no_evnets, null);
 
+        } else {
+            layout = inflater.inflate(R.layout.fragment_reminders_list, container, false);
+            recyclerview = (RecyclerView) layout.findViewById(R.id.recyclerview);
+        }
         return layout;
 
     }
@@ -36,10 +41,11 @@ public class ScheduledReminders extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        recyclerview.setAdapter(new MyScheduledRemindersAdapter(getActivity()));
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerview.setLayoutManager(layoutManager);
-        //list.setAdapter(new FutureEventAdapter(getActivity(), temp));
+        if (!Constants.scheduledEvents.isEmpty()) {
+            recyclerview.setAdapter(new MyScheduledRemindersAdapter(getActivity()));
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+            recyclerview.setLayoutManager(layoutManager);
+        }
 
     }
 

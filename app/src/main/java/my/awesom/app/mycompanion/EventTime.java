@@ -15,13 +15,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,7 +43,7 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
     private AlarmManager alarmManager;
     private Toolbar toolbar;
     private CardView cardContactLayout;
-    private Button contactIntentButton, confirmButton;
+    private ImageButton contactIntentButton, confirmButton;
     private EditText messageBox;
     private String names_list = "";
 
@@ -66,7 +65,7 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
         timePicker = (TimePicker) findViewById(R.id.timePicker);
         radioGroup = (RadioGroup) findViewById(R.id.smschoice);
         contactLayout = (LinearLayout) findViewById(R.id.contactLayout);
-        contactIntentButton = (Button) findViewById(R.id.contactIntentButton);
+        contactIntentButton = (ImageButton) findViewById(R.id.contactIntentButton);
         messageBox = (EditText) findViewById(R.id.message);
         cardContactLayout = (CardView) findViewById(R.id.cardContactLayout);
         contactIntentButton.setOnClickListener(this);
@@ -76,14 +75,14 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.yes_sms) {
                     Animation fade = AnimationUtils.loadAnimation(EventTime.this, android.R.anim.fade_in);
-                    fade.setDuration(1000);
+                    fade.setDuration(1500);
                     cardContactLayout.startAnimation(fade);
                     contactLayout.setVisibility(View.VISIBLE);
                 }
                 if (checkedId == R.id.no_sms) {
 
                     Animation fade = AnimationUtils.loadAnimation(EventTime.this, android.R.anim.fade_out);
-                    fade.setDuration(1000);
+                    fade.setDuration(1500);
                     cardContactLayout.startAnimation(fade);
                     contactLayout.setVisibility(View.GONE);
                 }
@@ -188,7 +187,7 @@ public class EventTime extends ActionBarActivity implements View.OnClickListener
                         i.putExtra("requestcode", eventId);
                         PendingIntent pendingIntent = PendingIntent.getService(EventTime.this, eventId, i, PendingIntent.FLAG_UPDATE_CURRENT);
                         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-                        Toast.makeText(EventTime.this, "Alarm set", Toast.LENGTH_SHORT).show();
+
                         flag = true;
                     } else {
                         AnimationsClass.animateContactBox(contactIntentButton);

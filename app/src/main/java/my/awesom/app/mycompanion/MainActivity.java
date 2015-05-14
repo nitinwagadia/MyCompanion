@@ -32,9 +32,8 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
-        //if (Constants.scheduledEvents.isEmpty() && Constants.pastEvents.isEmpty()) {
         new GetAllEvents().execute();
-        //}
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -62,6 +61,13 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+        Log.i("MYLIST", "Main Activity on Stop");
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -149,7 +155,6 @@ public class MainActivity extends ActionBarActivity {
             setProgress(20);
             Database.getAllLocationEvents();
             setProgress(50);
-            // Log.i("MYLIST", "I am done");
             return null;
         }
 
@@ -157,11 +162,6 @@ public class MainActivity extends ActionBarActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             EventBus.getDefault().post(new CloseDialogForEvents());
-            for (int i = 0; i < Constants.pastEvents.size(); i++)
-                Log.i("MYLIST", Constants.pastEvents.get(i).getEventId() + " is stored");
-
-            for (int i = 0; i < Constants.scheduledEvents.size(); i++)
-                Log.i("MYLIST", Constants.scheduledEvents.get(i).getEventId() + " is stored");
 
         }
 

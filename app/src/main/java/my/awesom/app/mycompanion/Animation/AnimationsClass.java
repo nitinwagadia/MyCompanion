@@ -7,7 +7,7 @@ package my.awesom.app.mycompanion.Animation;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 
 import my.awesom.app.mycompanion.adapters.MyPastRemindersAdapter;
 import my.awesom.app.mycompanion.adapters.MyScheduledRemindersAdapter;
@@ -53,7 +53,7 @@ public class AnimationsClass {
 
     }
 
-    public static void animateContactBox(Button contactIntentButton) {
+    public static void animateContactBox(ImageButton contactIntentButton) {
         ObjectAnimator error = ObjectAnimator.ofFloat(contactIntentButton, "translationX", 0, 50, -50, 0, 25, -25, 0);
         error.setDuration(500);
         error.start();
@@ -113,4 +113,3 @@ public class AnimationsClass {
 
 
 }
-

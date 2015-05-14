@@ -39,6 +39,11 @@
                 android:text="Message" />
 
             <TextView
+                android:id="@+id/typeTransition"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
                 android:id="@+id/dateTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -1,6 +1,8 @@
 package my.awesom.app.mycompanion;
 
 
+import com.google.android.gms.maps.model.Marker;
+
 import java.util.List;
 
 import my.awesom.app.mycompanion.models.MyEventDetails;
@@ -8,8 +10,6 @@ import my.awesom.app.mycompanion.models.MyEventDetails;
 public class Constants {
     public static final int PICK_CONTACT = 1;
     public static final int PICKED_CONTACTS = 1;
-    public static final String NAMES = "CONTACT_NAMES";
-    public static final String NUMBERS = "CONTACT_NUMBERS";
     public static final String CONTACT_DATA = "CONTACT_DETAIL";
     public static final int TYPE_TIME_NO_SMS = 10;
     public static final int TYPE_TIME_SMS = 11;
@@ -25,6 +25,7 @@ public class Constants {
     public static int eventId = 0;
     public static List<MyEventDetails> pastEvents;
     public static List<MyEventDetails> scheduledEvents;
+    public static Marker[] marker = new Marker[1];
 
 
 }

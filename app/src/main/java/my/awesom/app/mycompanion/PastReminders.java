@@ -27,21 +27,25 @@ public class PastReminders extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.i("MYLIST", "PR : Create View");
-        View layout = inflater.inflate(R.layout.fragment_reminders_list, null);
-        recyclerview = (RecyclerView) layout.findViewById(R.id.recyclerview);
+        View layout;
+        if (Constants.pastEvents.isEmpty()) {
+            layout = inflater.inflate(R.layout.remider_no_evnets, null);
 
+        } else {
+            layout = inflater.inflate(R.layout.fragment_reminders_list, null);
+            recyclerview = (RecyclerView) layout.findViewById(R.id.recyclerview);
+        }
         return layout;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.i("MYLIST", "PR : Activity Created");
-        recyclerview.setAdapter(new MyPastRemindersAdapter(getActivity()));
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerview.setLayoutManager(layoutManager);
-
+        if (!Constants.pastEvents.isEmpty()) {
+            recyclerview.setAdapter(new MyPastRemindersAdapter(getActivity()));
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+            recyclerview.setLayoutManager(layoutManager);
+        }
     }
 
     @Override

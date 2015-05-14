@@ -13,8 +13,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -45,20 +45,18 @@ import my.awesom.app.mycompanion.services.SettingGeoFenceService;
 public class EventLocation extends ActionBarActivity implements OnMapReadyCallback, View.OnClickListener {
 
 
-    static Marker[] marker = new Marker[1];
     MapFragment mapFragment;
     Toolbar toolbar;
     boolean doesMarkerExist = false;
     private GoogleMap googleMap;
     private RadioGroup radioGroupSMS, radioGroupTransition;
     private LinearLayout contactLayout;
-    private Button contactIntentButton;
-    private Button confirmButton;
+    private ImageButton contactIntentButton;
     private EditText messageBox;
-    private String names_list;
     private Circle myCircle;
     private ArrayList<MyContacts> selectedContacts;
     private ProgressDialog progressDialog;
+    private String names_list = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +73,7 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
         radioGroupSMS = (RadioGroup) findViewById(R.id.smschoice);
         radioGroupTransition = (RadioGroup) findViewById(R.id.transitionChoice);
         contactLayout = (LinearLayout) findViewById(R.id.contactLayout);
-        contactIntentButton = (Button) findViewById(R.id.contactIntentButton);
+        contactIntentButton = (ImageButton) findViewById(R.id.contactIntentButton);
         messageBox = (EditText) findViewById(R.id.message);
         contactIntentButton.setOnClickListener(this);
 
@@ -95,14 +93,24 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
         if (savedInstanceState == null) {
             mapFragment.getMapAsync(this);
         } else {
+            googleMap = mapFragment.getMap();
             Bundle b = savedInstanceState;
             messageBox.setText(b.getString("messageBox"));
             mapFragment.getMapAsync(this);
-            EventLocation.marker[0].setPosition(new LatLng(b.getDouble("latitude"), b.getDouble("longitude")));
-            //setCircle(EventLocation.marker[0].getPosition(), googleMap);
-            doesMarkerExist = true;
-            Log.i("MYLIST", "Lat : " + b.getDouble("latitude") + "");
-            Log.i("MYLIST", "Lon : " + b.getDouble("longitude"));
+            if (Constants.marker[0] != null) {
+                Constants.marker[0].setPosition(new LatLng(b.getDouble("latitude"), b.getDouble("longitude")));
+                setCircle(Constants.marker[0].getPosition(), googleMap);
+                MarkerOptions markerOptions = new MarkerOptions().draggable(true).position(Constants.marker[0].getPosition()).title("You are here");
+                Constants.marker[0] = googleMap.addMarker(markerOptions);
+                doesMarkerExist = true;
+            }
+            selectedContacts = savedInstanceState.getParcelableArrayList("contacts");
+            if (selectedContacts != null) {
+                for (int i = 0; i < selectedContacts.size(); i++)
+                    names_list += selectedContacts.get(i).getName() + "\n";
+
+                ((TextView) findViewById(R.id.contacts_selected)).setText(names_list);
+            }
 
 
         }
@@ -117,7 +125,6 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
 
     @Override
     public void onMapReady(GoogleMap gMap) {
-        Log.i("MYLIST", "MAP READY");
         googleMap = gMap;
         googleMap.setMyLocationEnabled(true);
         // Location location = googleMap.getMyLocation();
@@ -130,13 +137,13 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
                 if (!doesMarkerExist) {
                     googleMap.clear();
                     MarkerOptions markerOptions = new MarkerOptions().draggable(true).position(latLng).title("You are here");
-                    EventLocation.marker[0] = googleMap.addMarker(markerOptions);
+                    Constants.marker[0] = googleMap.addMarker(markerOptions);
                     doesMarkerExist = true;
                 } else {
-                    EventLocation.marker[0].setPosition(latLng);
+                    Constants.marker[0].setPosition(latLng);
                 }
 
-                setCircle(EventLocation.marker[0].getPosition(), googleMap);
+                setCircle(Constants.marker[0].getPosition(), googleMap);
 
 
             }
@@ -145,28 +152,28 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
         googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
             @Override
             public void onMarkerDragStart(Marker marker) {
-                EventLocation.marker[0] = marker;
-                setCircle(EventLocation.marker[0].getPosition(), googleMap);
+                Constants.marker[0] = marker;
+                setCircle(Constants.marker[0].getPosition(), googleMap);
 
             }
 
             @Override
             public void onMarkerDrag(Marker marker) {
-                EventLocation.marker[0] = marker;
-                setCircle(EventLocation.marker[0].getPosition(), googleMap);
+                Constants.marker[0] = marker;
+                setCircle(Constants.marker[0].getPosition(), googleMap);
 
             }
 
             @Override
             public void onMarkerDragEnd(Marker marker) {
-                EventLocation.marker[0] = marker;
-                setCircle(EventLocation.marker[0].getPosition(), googleMap);
+                Constants.marker[0] = marker;
+                setCircle(Constants.marker[0].getPosition(), googleMap);
 
             }
         });
     }
 
-    private void setCircle(LatLng position, GoogleMap googleMap) {
+    private void setCircle(LatLng position, GoogleMap map) {
         if (myCircle != null) {
             myCircle.remove();
         }
@@ -174,12 +181,12 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
         // change radius to size of radius of geofence;
 
         CircleOptions circleOptions = new CircleOptions()
-                .center(EventLocation.marker[0].getPosition())
+                .center(Constants.marker[0].getPosition())
                 .radius(100)
                 .strokeColor(Color.BLACK)
                 .fillColor(0x88ff0000)
                 .strokeWidth(5);
-        myCircle = googleMap.addCircle(circleOptions);
+        myCircle = map.addCircle(circleOptions);
 
     }
 
@@ -247,17 +254,14 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
             } else {
                 if (type == Constants.TYPE_LOCATION_SMS) {
                     if (selectedContacts != null) {
-                        if (EventLocation.marker[0] != null) {
+                        if (Constants.marker[0] != null) {
                             int eventId = Constants.eventId++;
                             Geofence geofence = setUpGeoFenceBuilder(eventId, transition_type);
 
-                            Log.i("MYLIST", "I am going to find  geocode");
-                            String geoCode = getAddress(EventLocation.marker[0].getPosition().latitude, EventLocation.marker[0].getPosition().longitude);
-                            Log.i("MYLIST", "Yippeeee geocode " + geoCode);
+                            String geoCode = getAddress(Constants.marker[0].getPosition().latitude, Constants.marker[0].getPosition().longitude);
 
                             MyEventDetails details = null;
                             details = new MyEventDetails(message, selectedContacts, geoCode, eventId, Constants.IS_NOT_PAST, type, transition_type);
-                            Log.i("MYLIST", "I found  geocode " + geoCode);
 
 
                             new AddLocationToDataBase().execute(details);
@@ -278,27 +282,18 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
                     }
 
                 } else if (type == Constants.TYPE_LOCATION_NO_SMS) {
-                    if (EventLocation.marker[0] != null) {
+                    if (Constants.marker[0] != null) {
                         int eventId = Constants.eventId++;
                         Geofence geofence = setUpGeoFenceBuilder(eventId, transition_type);
                         SettingGeoFenceService.setUp(geofence, eventId, type);
 
-                        Log.i("MYLIST", "I am going to find  geocode");
-                        String geoCode = getAddress(EventLocation.marker[0].getPosition().latitude, EventLocation.marker[0].getPosition().longitude);
+                        String geoCode = getAddress(Constants.marker[0].getPosition().latitude, Constants.marker[0].getPosition().longitude);
 
-                        Toast.makeText(EventLocation.this, geoCode, Toast.LENGTH_LONG).show();
-                        Log.i("MYLIST", "geocode is : " + geoCode);
 
                         MyEventDetails details = null;
-                        Log.i("MYLIST", "creating detail object");
-                        Log.i("MYLIST", "geocode is : " + geoCode);
                         details = new MyEventDetails(message, null, geoCode, eventId, Constants.IS_NOT_PAST, type, transition_type);
-                        Log.i("MYLIST", "Done creating detail object");
-                        Log.i("MYLIST", "geocode is : " + geoCode);
                         new AddLocationToDataBase().execute(details);
-                        Log.i("MYLIST", "Adding to Database");
                         startService(new Intent(EventLocation.this, SettingGeoFenceService.class));
-                        Log.i("MYLIST", "Starting service");
 
                         flag = true;
 
@@ -326,12 +321,15 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList("contacts", selectedContacts);
-        outState.putInt("radiosms", radioGroupSMS.getCheckedRadioButtonId());
-        outState.putInt("radiotransition", radioGroupTransition.getCheckedRadioButtonId());
         outState.putString("message", messageBox.getText().toString());
-        outState.putDouble("latitude", EventLocation.marker[0].getPosition().latitude);
-        outState.putDouble("latitude", EventLocation.marker[0].getPosition().longitude);
 
+        if (Constants.marker[0] != null) {
+            outState.putDouble("latitude", Constants.marker[0].getPosition().latitude);
+            outState.putDouble("longitude", Constants.marker[0].getPosition().longitude);
+        } else {
+            outState.putDouble("latitude", 0);
+            outState.putDouble("longitude", 0);
+        }
     }
 
     public void onEventMainThread(ShowDialogForGeoCode s) {
@@ -363,7 +361,7 @@ public class EventLocation extends ActionBarActivity implements OnMapReadyCallba
 
         Geofence.Builder geoFenceBuilder = new Geofence.Builder();
         geoFenceBuilder.setRequestId(eventId + "");
-        geoFenceBuilder.setCircularRegion(marker[0].getPosition().latitude, marker[0].getPosition().longitude, 100);
+        geoFenceBuilder.setCircularRegion(Constants.marker[0].getPosition().latitude, Constants.marker[0].getPosition().longitude, 100);
         geoFenceBuilder.setExpirationDuration(Constants.time);
         if (transition_type == Constants.TRANSITION_ENTER) {
             geoFenceBuilder.setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER);

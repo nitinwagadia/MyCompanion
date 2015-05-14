@@ -12,5 +12,10 @@
     <string name="notification_ticker">Message Sent!</string>
     <string name="notification_title">Remind Me</string>
     <string name="notification_content">Message sent for the event</string>
+    <string name="leave">Leave</string>
+    <string name="reach">Reach</string>
+    <string name="message">Message:</string>
+    <string name="enter_message">Please Enter Message</string>
+    <string name="when_event">When do you want this event?</string>
 
 </resources>

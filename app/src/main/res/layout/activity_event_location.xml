@@ -31,43 +31,50 @@
             android:layout_marginTop="10dp"
             android:layout_weight="0.4" />
 
-        <TextView
-
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/background_text_view"
-            android:text="When do you want this event?" />
+            android:layout_marginTop="10dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <RadioGroup
-                android:id="@+id/transitionChoice"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="1.0">
+                android:background="@drawable/background_text_view"
+                android:orientation="vertical">
 
-                <RadioButton
-                    android:id="@+id/transition_leave"
-                    android:layout_width="0dp"
+
+                <TextView
+
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:checked="true"
-                    android:text="Leave" />
+                    android:layout_marginTop="10dp"
+                    android:text="@string/when_event" />
 
-                <RadioButton
-                    android:id="@+id/transition_enter"
-                    android:layout_width="0dp"
+
+                <RadioGroup
+                    android:id="@+id/transitionChoice"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="Reach" />
-            </RadioGroup>
+                    android:orientation="horizontal"
+                    android:weightSum="1.0">
 
-        </LinearLayout>
+                    <RadioButton
+                        android:id="@+id/transition_leave"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:checked="true"
+                        android:text="@string/leave" />
+
+                    <RadioButton
+                        android:id="@+id/transition_enter"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="@string/reach" />
+                </RadioGroup>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -75,28 +82,40 @@
             android:layout_weight="0.6"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/messageLayout"
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical">
+                android:layout_marginTop="10dp">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/background_text_view"
-                    android:text="Message: " />
+                    android:orientation="vertical">
 
-                <EditText
-                    android:id="@+id/message"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/message_edit_text"
-                    android:hint="Please Enter Message"
-                    android:lines="3" />
-            </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/messageLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/message"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <EditText
+                            android:id="@+id/message"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:hint="@string/enter_message"
+                            android:lines="2" />
+                    </LinearLayout>
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
 
             <ScrollView
                 android:layout_width="match_parent"
@@ -107,81 +126,98 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <TextView
+                    <android.support.v7.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/background_text_view"
-                        android:text="Do you want to send SMS?" />
-
-                    <LinearLayout
-
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:orientation="horizontal">
-
-                        <RadioGroup
-                            android:id="@+id/smschoice"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:weightSum="1.0">
-
-                            <RadioButton
-                                android:id="@+id/yes_sms"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.5"
-                                android:checked="true"
-                                android:text="Yes" />
-
-                            <RadioButton
-                                android:id="@+id/no_sms"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.5"
-                                android:text="No" />
-                        </RadioGroup>
-                    </LinearLayout>
-
-                    <LinearLayout
-
-                        android:id="@+id/contactLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:orientation="vertical">
+                        android:layout_marginTop="10dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:weightSum="1.0">
+                            android:background="@drawable/background_text_view"
+                            android:orientation="vertical">
+
 
                             <TextView
-                                android:layout_width="0dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="0.7"
-                                android:text="Please Select Contact" />
+                                android:layout_marginTop="10dp"
+                                android:text="Do you want to send SMS?"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
 
-                            <Button
-                                android:id="@+id/contactIntentButton"
-                                android:layout_width="0dp"
+
+                            <RadioGroup
+                                android:id="@+id/smschoice"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="0.3"
-                                android:src="@android:drawable/ic_menu_call" />
+                                android:orientation="horizontal"
+                                android:weightSum="1.0">
+
+                                <RadioButton
+                                    android:id="@+id/yes_sms"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.5"
+                                    android:checked="true"
+                                    android:text="Yes" />
+
+                                <RadioButton
+                                    android:id="@+id/no_sms"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.5"
+                                    android:text="No" />
+                            </RadioGroup>
                         </LinearLayout>
+                    </android.support.v7.widget.CardView>
 
+                    <android.support.v7.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-                        <TextView
-
-                            android:id="@+id/contacts_selected"
+                        <LinearLayout
+                            android:id="@+id/contactLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/background_text_view" />
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/background_text_view"
+                            android:orientation="vertical">
 
-                    </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:weightSum="1.0">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.7"
+                                    android:text="Please Select Contact"
+                                    android:textSize="20sp"
+                                    android:textStyle="bold" />
+
+                                <ImageButton
+                                    android:id="@+id/contactIntentButton"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_margin="10dp"
+                                    android:layout_weight="0.3"
+                                    android:background="@android:color/holo_blue_light"
+                                    android:src="@drawable/ic_contact" />
+                            </LinearLayout>
+
+
+                            <TextView
+
+                                android:id="@+id/contacts_selected"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+                    </android.support.v7.widget.CardView>
                 </LinearLayout>
             </ScrollView>
 

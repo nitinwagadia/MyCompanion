@@ -51,10 +51,17 @@ public class MyScheduledRemindersAdapter extends RecyclerView.Adapter<MyViewHold
             holder.imageView.setImageDrawable(context.getResources().getDrawable(R.mipmap.ic_clock));
             holder.location.setVisibility(View.GONE);
             holder.dateTime.setVisibility(View.VISIBLE);
+            holder.typeTransition.setVisibility(View.GONE);
         }
 
         holder.message.setText(message + Constants.scheduledEvents.get(position).getMessage());
         if (isLocationEvent(position)) {
+
+            if (Constants.scheduledEvents.get(position).getTransition_type() == Constants.TRANSITION_ENTER)
+                holder.typeTransition.setText("Remind on " + "Arrival");
+            else
+                holder.typeTransition.setText("Remind on " + "Departure");
+
             holder.location.setText("Location : " + Constants.scheduledEvents.get(position).getAddress());
         } else {
             holder.dateTime.setText("Reminder set for : " + Constants.scheduledEvents.get(position).getTime());
@@ -72,6 +79,7 @@ public class MyScheduledRemindersAdapter extends RecyclerView.Adapter<MyViewHold
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
+        TextView typeTransition;
         CardView cardView;
         TextView message, dateTime, location;
         ImageView imageView;
@@ -82,6 +90,7 @@ public class MyScheduledRemindersAdapter extends RecyclerView.Adapter<MyViewHold
             cardView = (CardView) itemView.findViewById(R.id.card_view);
             message = (TextView) itemView.findViewById(R.id.message);
             location = (TextView) itemView.findViewById(R.id.location);
+            typeTransition = (TextView) itemView.findViewById(R.id.typeTransition);
             dateTime = (TextView) itemView.findViewById(R.id.dateTime);
         }
     }
