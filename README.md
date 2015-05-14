@@ -7,4 +7,4 @@ am proposing to develop location-based reminder application. As the name suggest
 application will allow the user to instruct the application to either alert or take certain
 actions when the user arrives or leaves specified destination.
 
-In this application i have used Google play service for setting the geofence and get location of he user at very low power consumption. 
+In this application i have used Google play service for setting the geofence and getting location of he user at very low power consumption. Once the user arrives at specified location the event which is set by the user(sending sms or notification as pop up) is triggered.
